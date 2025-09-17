@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Contact Us</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #333;
+        padding: 15px 20px;
+      }
+
+      .navbar h1 {
+        color: #fff;
+        text-decoration: none;
+        font-size: 2.2rem;
+        margin-left: 28px;
+      }
+
+      .contact-us {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 50px 20px;
+        background-color: #e5e5f7;
+        height: calc(100vh - 70px);
+      }
+
+      .contact-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .contact-header h2 {
+        font-size: 2.5rem;
+        color: #333;
+      }
+
+      .contact-form {
+        max-width: 600px;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: "Arial", sans-serif;
+        font-size: 1rem;
+      }
+
+      .contact-form button {
+        background-color: #ffa500;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .contact-form button:hover {
+        background-color: #ff7f00;
+      }
+
+      .contact-info {
+        text-align: center;
+      }
+
+      .contact-info p {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 10px;
+      }
+
+      ::placeholder {
+        font-family: "Arial", sans-serif;
+        color: #aaa;
+        opacity: 1;
+      }
+
+      /* flash message styles */
+      .flash-wrapper {
+        max-width: 600px;
+        width: 100%;
+        margin-bottom: 12px;
+      }
+      .flash {
+        padding: 10px 14px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+      }
+      .flash-success {
+        background: #d1ead7;
+        color: #1f7a3a;
+        border: 1px solid #b6e0b9;
+      }
+      .flash-danger {
+        background: #f8d7da;
+        color: #7a2026;
+        border: 1px solid #f1b0b7;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <h1>Contact Us</h1>
+    </nav>
+
+    <section class="contact-us">
+      <div class="contact-header">
+        <h2>Your Thoughts Matter!</h2>
+      </div>
+
+      
+      <div class="flash-wrapper">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, msg in messages %}
+              <div class="flash {{ 'flash-danger' if category == 'danger' else 'flash-success' }}">
+                {{ msg }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Form: posts to the Flask contact route -->
+      <form class="contact-form" action="{{ url_for('contact') }}" method="post" novalidate>
+        <input name="name" type="text" placeholder="Your Name" required />
+        <input name="email" type="email" placeholder="Your Email" required />
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+
+      <div class="contact-info">
+        <p>Have questions? We're here to help!</p>
+        <p>Email: carpool@gmail.com <i class="fa-solid fa-envelope"></i></p>
+        <p>Phone: +123 456 7890 <i class="fa-solid fa-phone"></i></p>
+      </div>
+    </section>
+  </body>
+</html>

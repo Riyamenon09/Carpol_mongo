@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #333;
+        padding: 15px 20px;
+      }
+
+      .navbar h1 {
+        color: #fff;
+        text-decoration: none;
+        font-size: 2.2rem;
+        margin-left: 28px;
+      }
+
+      .signin {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 50px 20px;
+        background-color: #e5e5f7;
+        flex: 1;
+        width: 100%;
+      }
+
+      .signin-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .signin-header h2 {
+        font-size: 2.5rem;
+        color: #333;
+      }
+
+      .signin-form {
+        text-align: center;
+        max-width: 400px;
+        margin-bottom: 20px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .signin-form label {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      .signin-form input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .signin-form button {
+        background-color: #ffa500;
+        color: #fff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .signin-form button:hover {
+        background-color: #ff7f00;
+      }
+
+      .alert {
+        color: red;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+      }
+
+      .forget-password {
+        margin-top: 15px;
+        font-size: 1rem;
+      }
+
+      .forget-password a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+
+      .forget-password a:hover {
+        text-decoration: underline;
+      }
+
+      ::placeholder {
+        font-family: "Arial", sans-serif;
+        color: #aaa;
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <h1>Welcome Back</h1>
+    </nav>
+
+    <section class="signin">
+      <div class="signin-header">
+        <h2>Sign In to Your Account</h2>
+      </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+            <div class="alert {{ 'alert-danger' if category == 'danger' else 'alert-success' }}">
+                {{ msg }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+
+      <div class="signin-form">
+        <form action="{{ url_for('signin') }}" method="post">
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter your username"
+            required
+          />
+
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+
+          <button type="submit">Sign In</button>
+
+          <div class="forget-password">
+          <p><a href="{{ url_for('forget_password') }}">Forgot Password?</a></p>
+        </div>
+        </form>
+
+       
+      </div>
+    </section>
+  </body>
+</html>      

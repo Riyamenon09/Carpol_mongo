@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Confirm Booking</title>
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#fff; --muted:#6b7280; --accent:#ff8c00; --success:#28a745;
+      --radius:12px; --shadow:0 10px 30px rgba(17,24,39,0.06);
+      font-family: Inter, Roboto, Arial, sans-serif;
+    }
+    body{margin:0;background:var(--bg);color:#0b1220}
+    .navbar{background:#27272a;color:#fff;padding:14px 20px}
+    .container{max-width:980px;margin:36px auto;padding:0 18px}
+    .panel{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+    .title{font-weight:800;font-size:20px;margin-bottom:6px}
+    .meta{color:var(--muted);margin-bottom:10px}
+    .notes{color:#374151;margin-bottom:12px}
+    label{display:block;color:var(--muted);font-weight:600;margin-top:8px}
+    select,input[type="number"],input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;background:#fbfcfe}
+    .confirm-btn{background:var(--success);color:white;padding:12px;border-radius:10px;border:0;width:100%;font-weight:800;cursor:pointer;margin-top:14px}
+    .cancel-link{display:block;text-align:center;margin-top:12px;color:#374151;text-decoration:none}
+    .small{font-size:13px;color:var(--muted)}
+    .photo{width:100%;height:160px;background:#f3f4f6;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#94a3b8}
+    .vehicle-block{background:#fbfbff;border-radius:10px;padding:12px;border:1px solid #eef3ff;margin-top:12px}
+
+    /* rating stars — improved contrast and sizing */
+    .rating { display:flex; align-items:center; gap:12px; margin-top:6px; }
+    .stars { position:relative; font-size:18px; line-height:1; height:20px; width:120px; }
+    .stars .stars-empty { color:#cbd5e1; /* darker empty color */ font-size:20px; letter-spacing:2px; }
+    .stars .stars-fill { position:absolute; left:0; top:0; overflow:hidden; white-space:nowrap; color:#f59e0b; font-size:20px; letter-spacing:2px; }
+    .rating-count { color:#111827; font-size:14px; font-weight:700; }
+
+    /* fallback "no ratings" */
+    .no-ratings { color:#6b7280; font-size:13px; font-weight:600; }
+
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar"><strong>Confirm Booking</strong></div>
+
+  <div class="container">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div class="title">{{ ride.driver_name }} — {{ ride.origin }} → {{ ride.destination }}</div>
+          <div class="meta">Seats available: <strong>{{ ride.seats_available }}</strong> &nbsp; • &nbsp; {{ ride.date }} &nbsp; • &nbsp; Fare: ₹{{ ride.fare }}</div>
+
+          {# Rating visualization: always show empty stars; show filled portion based on rating.
+             If there are no ratings (rating_count == 0) show "No ratings yet" instead of "0.0 (0)" so it reads better. #}
+          {% set _rating = (ride.rating|default(0) | float) %}
+          {% set _rc = (ride.rating_count|default(0) | int) %}
+          <div style="margin-top:6px;">
+            {% if _rc <= 0 %}
+              <div class="rating">
+                <div class="stars" aria-hidden="true">
+                  <div class="stars-empty">★★★★★</div>
+                  <div class="stars-fill" style="width: {{ (_rating * 20)|round(2) }}%;">★★★★★</div>
+                </div>
+                <div class="no-ratings">No ratings yet</div>
+              </div>
+            {% else %}
+              <div class="rating" aria-label="Driver rating">
+                <div class="stars" title="{{ '%.1f'|format(_rating) }} / 5">
+                  <div class="stars-empty">★★★★★</div>
+                  <div class="stars-fill" style="width: {{ (_rating * 20)|round(2) }}%;">★★★★★</div>
+                </div>
+                <div class="rating-count">{{ '%.1f'|format(_rating) }} ({{ _rc }})</div>
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+        <div class="small">Booking preview</div>
+      </div>
+
+      <div class="grid" style="margin-top:14px;">
+        <!-- LEFT: ride & payment -->
+        <div>
+          <div class="notes">{{ ride.notes or 'No extra notes' }}</div>
+
+          <!-- Driver photo & contact -->
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:120px;">
+              {% set driver_photo_rel = None %}
+              {% if ride.files and ride.files.driver_photo %}
+                {% set _p = ride.files.driver_photo %}
+                {% set _p = _p.lstrip('/') %}
+                {% if _p.startswith('static/') %}
+                  {% set _p = _p[7:] %}
+                {% endif %}
+                {% set driver_photo_rel = _p %}
+              {% endif %}
+
+              {% if driver_photo_rel %}
+                <img src="{{ url_for('static', filename=driver_photo_rel) }}" alt="Driver photo"
+                     style="width:100%;height:120px;object-fit:cover;border-radius:8px" />
+              {% else %}
+                <div class="photo">Driver photo</div>
+              {% endif %}
+            </div>
+
+            <div style="flex:1">
+              <div style="font-weight:800">{{ ride.driver_name }}</div>
+              <div class="small">Contact: <a href="tel:{{ ride.contact_number }}">{{ ride.contact_number }}</a></div>
+              <div class="small" style="margin-top:6px;">Gender: {{ ride.driver_gender or 'N/A' }}</div>
+
+              {% if ride.vehicle %}
+                <div class="vehicle-block" style="margin-top:10px;">
+                  <div style="font-weight:700;">Vehicle</div>
+                  {% if ride.vehicle.type %}<div class="small">Type: {{ ride.vehicle.type }}</div>{% endif %}
+                  {% if ride.vehicle.license_plate %}<div class="small">Plate: {{ ride.vehicle.license_plate }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Payment form -->
+          <div style="margin-top:18px;">
+            <div style="font-weight:800;margin-bottom:8px;">Payment</div>
+            <div style="border:1px solid #e7ebf2;border-radius:10px;padding:12px;background:#fff;">
+              <form action="{{ url_for('confirm_booking') }}" method="POST" id="confirmForm">
+                <input type="hidden" name="ride_id" value="{{ ride.id }}" />
+                <label for="passengers">Number of passengers</label>
+                <select name="passengers" id="passengers" required>
+                  {% set max_seats = ride.seats_available if ride.seats_available is not none else 1 %}
+                  {% for i in range(1, max_seats + 1) %}
+                    <option value="{{ i }}" {% if i == default_passengers %}selected{% endif %}>{{ i }}</option>
+                  {% endfor %}
+                </select>
+
+                <label style="margin-top:12px;">Choose payment method</label>
+                <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
+                  <label><input type="radio" name="payment_method" value="cash" checked /> Cash (on pickup)</label>
+                  <label><input type="radio" name="payment_method" value="upi" /> UPI</label>
+                  <label><input type="radio" name="payment_method" value="card" /> Card</label>
+                </div>
+
+                <div id="payment_inputs" style="margin-top:10px;">
+                  <div class="small">Pay cash to driver at pickup.</div>
+                </div>
+
+                <input type="hidden" name="payment_details" id="payment_details" value="" />
+
+                <button type="submit" class="confirm-btn">Confirm & Book (₹<span id="totalFare">{{ ride.fare * default_passengers }}</span>)</button>
+              </form>
+
+              <div style="margin-top:8px;" class="small">Demo payment UI — do not store full card details in production. Integrate a gateway for real payments.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: summary -->
+        <div>
+          <div style="background:#fbfbff;border-radius:10px;padding:16px;border:1px solid #eef3ff;">
+            <div style="font-weight:700;margin-bottom:8px;">Ride Summary</div>
+            <div class="small">From: <strong>{{ ride.origin }}</strong></div>
+            <div class="small" style="margin-top:6px;">To: <strong>{{ ride.destination }}</strong></div>
+            <div class="small" style="margin-top:8px;">Fare per person: <strong>₹{{ ride.fare }}</strong></div>
+            <div class="small" style="margin-top:8px;">Seats left: <strong id="seats-left">{{ ride.seats_available }}</strong></div>
+            <div class="small" style="margin-top:8px;">Driver: <strong>{{ ride.driver_name }}</strong></div>
+
+            <div style="margin-top:12px;">
+              <div class="small">Total (calculated):</div>
+              <div style="font-weight:800;font-size:18px;margin-top:6px;">₹<span id="computedTotal">{{ ride.fare * default_passengers }}</span></div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- grid -->
+    </div>
+  </div>
+
+  <script>
+    // UI: update total and handle payment input rendering & submission packing
+    const fare = Number({{ ride.fare|default(0)|float }});
+    const passengersSelect = document.getElementById('passengers');
+    const totalSpan = document.getElementById('totalFare');
+    const computedTotal = document.getElementById('computedTotal');
+    const paymentInputs = document.getElementById('payment_inputs');
+    const paymentDetailsField = document.getElementById('payment_details');
+
+    function updateTotal(){
+      const p = Number(passengersSelect.value || 1);
+      const total = fare * p;
+      if (totalSpan) totalSpan.textContent = total;
+      if (computedTotal) computedTotal.textContent = total;
+    }
+
+    // show payment inputs based on method
+    function showPaymentInputs(method){
+      paymentInputs.innerHTML = '';
+      paymentDetailsField.value = '';
+      if (method === 'cash'){
+        paymentInputs.innerHTML = '<div class="small">Pay cash to driver at pickup.</div>';
+      } else if (method === 'upi'){
+        paymentInputs.innerHTML = '<label for="upi_id">Enter UPI ID</label><input id="upi_id" name="upi_id" type="text" placeholder="example@upi" />';
+      } else if (method === 'card'){
+        paymentInputs.innerHTML = '<label for="card_last4">Card last 4 digits (demo)</label><input id="card_last4" name="card_last4" type="text" maxlength="4" placeholder="1234" /><label for="card_name">Name on card</label><input id="card_name" name="card_name" type="text" placeholder="Name on card" />';
+      }
+    }
+
+    // init
+    updateTotal();
+    showPaymentInputs('cash');
+
+    // method change listeners
+    document.querySelectorAll('input[name="payment_method"]').forEach(r => {
+      r.addEventListener('change', e => showPaymentInputs(e.target.value));
+    });
+
+    passengersSelect.addEventListener('change', updateTotal);
+
+    // on submit: summarize payment details into hidden field
+    document.getElementById('confirmForm').addEventListener('submit', (ev) => {
+      const method = document.querySelector('input[name="payment_method"]:checked').value;
+      let details = '';
+      if (method === 'cash') details = 'cash_on_pickup';
+      else if (method === 'upi') {
+        const upi = document.getElementById('upi_id') ? document.getElementById('upi_id').value.trim() : '';
+        details = upi ? `upi:${upi}` : 'upi:unknown';
+      } else if (method === 'card') {
+        const last4 = document.getElementById('card_last4') ? document.getElementById('card_last4').value.trim() : '';
+        const name = document.getElementById('card_name') ? document.getElementById('card_name').value.trim() : '';
+        details = `card:last4=${last4||'xxxx'};name=${name||'n/a'}`;
+      }
+      paymentDetailsField.value = details;
+      // form submits to server which will perform seat checks and booking
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carpool Management</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 15px 0;
+      }
+
+      nav {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      .nav-links {
+        list-style: none;
+        display: flex;
+        margin-left: 0;
+      }
+
+      .nav-links li {
+        margin: 0 15px;
+      }
+
+      .nav-links a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1rem;
+      }
+
+      .nav-links a:hover {
+        color: #ffa500;
+      }
+      .service-item .ic {
+        height: 80px;
+        width: 90px;
+      }
+      .logo {
+        margin-right: 50px;
+      }
+      .logo a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 50px 20px;
+        background-color: #e5e5f7;
+      }
+
+      .hero-text {
+        max-width: 50%;
+        margin-left: 90px;
+      }
+
+      .hero-text h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+     
+
+      .cta-buttons {
+        margin-left: auto;
+        display: flex;
+      }
+
+      .cta-buttons a {
+        background-color: #ffa500;
+        color: #fff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-left: 30px;
+      }
+
+      .cta-buttons a:hover {
+        background-color: #ff7f00;
+      }
+
+      
+
+      .cta-button {
+        background-color: #0056b3;
+        color: #fff;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 1.2rem;
+        border-radius: 5px;
+      }
+
+      .cta-button:hover {
+        background-color: #003f7f;
+      }
+
+      .hero-image img {
+        width: 550px;
+        height: 350px;
+        margin-right: 80px;
+      }
+
+      .services {
+        text-align: center;
+        padding: 50px 20px;
+        background-color: #f9f9f9;
+      }
+
+      .services h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+
+      .service-items {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .service-item {
+        width: 23%;
+        text-align: center;
+      }
+
+      .service-item img {
+        width: 80px;
+        height: auto;
+        margin-bottom: 10px;
+      }
+
+      .service-item p {
+        font-size: 1.1rem;
+      }
+
+      footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 20px 0;
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="logo">
+          <a href="#">Carpool</a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('about') }}">About</a></li>
+          <li><a href="{{ url_for('vehicles') }}">Our Vehicles</a></li>
+          <li><a href="{{ url_for('contact') }}">Contact</a></li>
+          <li><a href="{{ url_for('register') }}">Register</a></li>
+          <li><a href="{{ url_for('signin') }}">Sign In</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Say goodbye to solo drives</h1>
+        <h2>and hello to shared rides!</h2>
+        <br />
+        <a href="{{ url_for('signin') }}" class="cta-button">Sign In Now</a>
+      </div>
+      <div class="hero-image">
+        <img
+          src="{{ url_for('static', filename='images/taxi.avif') }}"
+          alt="Taxi Illustration"
+        />
+      </div>
+    </section>
+
+    <section class="services">
+      <h2>OUR ACHIEVEMENTS</h2>
+      <div class="service-items">
+        <div class="service-item">
+          <img
+            src="{{ url_for('static', filename='images/achievement.jpeg') }}"
+            alt="achievement"
+            class="ic"
+          />
+          <p>1 Million+ Safe Rides Delivered</p>
+        </div>
+        <div class="service-item">
+          <img
+            src="{{ url_for('static', filename='images/star.jpeg') }}"
+            alt="5star Icon"
+            class="ic"
+          />
+          <p>Highest Rated</p>
+        </div>
+        <div class="service-item">
+          <img
+            src="{{ url_for('static', filename='images/time.png') }}"
+            alt="time"
+            class="ic"
+          />
+          <p>Always on Time!</p>
+        </div>
+        <div class="service-item">
+          <img
+            src="{{ url_for('static', filename='images/eco.png') }}"
+            alt="eco"
+            class="ic"
+          />
+          <p>Eco-friendly</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2024 Carpool Management. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

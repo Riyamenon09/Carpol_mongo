@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #333;
+        padding: 15px 20px;
+      }
+
+      .navbar h1 {
+        color: #fff;
+        font-size: 2.8rem;
+        margin-left: 28px;
+      }
+
+      .about-us {
+        display: flex;
+        align-items: center;
+        padding: 50px 20px;
+        background-color: #e5e5f7;
+        height: calc(100vh - 70px);
+      }
+
+      .about-text {
+        flex: 1;
+        padding-right: 30px;
+      }
+
+      .about-text p {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 20px;
+        margin-left: 30px;
+      }
+      .about-image {
+        flex: 1;
+        text-align: center;
+      }
+
+      .about-image img {
+        width: 500px;
+        height: 300px;
+      }
+      .backbutton {
+        background-color: #ffa500;
+        color: #fff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-left: 30px;
+      }
+
+      .backbutton:hover {
+        background-color: #ff7f00;
+      }
+
+     
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <h1>About Us</h1>
+    </nav>
+
+    <section class="about-us">
+      <div class="about-text">
+        <p>
+          Through Carpool, we believe in transforming the way people travel by
+          offering safe, sustainable, and affordable carpooling solutions. Our
+          mission is to reduce traffic congestion, lower carbon footprints, and
+          create a community where riders and drivers can connect seamlessly.
+          Founded in 2024, we understand the challenges of urban commuting. Our
+          platform is designed with user safety and convenience in mind,
+          providing a reliable service for individuals and families alike. We
+          prioritize women's safety, implementing features that ensure a secure
+          travel experience. Join us in our journey towards a greener future.
+          Together, we can make every ride count!
+        </p>
+        <a href="{{ url_for('home') }}" class="backbutton"
+          >Back to home page...</a
+        >
+      </div>
+      <div class="about-image">
+        <img src="static/images/about.png" alt="about us image" />
+      </div>
+    </section>
+  </body>
+</html>

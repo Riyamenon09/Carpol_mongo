@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carpool - Our Vehicles</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5fa;
+        margin: 0;
+      }
+
+      header {
+        background-color: #333;
+        padding: 1rem;
+        text-align: center;
+        position: sticky;
+        top: 0;
+      }
+
+      header h1 {
+        color: white;
+        font-size: 2rem;
+        margin: 0;
+        text-align: left;
+      }
+
+      .vehicle-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .vehicle {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .vehicle img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      .vehicle h2 {
+        margin: 15px 0;
+        font-size: 1.5rem;
+        color: #333;
+      }
+
+      .vehicle p {
+        font-size: 1rem;
+        color: #666;
+      }
+      .vehicle .size {
+        height: 160px;
+        width: 180px;
+      }
+
+      @media (max-width: 768px) {
+        .vehicle-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>OUR VEHICLES</h1>
+    </header>
+
+    <section class="vehicles">
+      <div class="vehicle-grid">
+        <div class="vehicle">
+          <img src="static/images/v1.png" alt="Vehicle 1" class="size" />
+          <h2>Toyota Prius</h2>
+        </div>
+        <div class="vehicle">
+          <img src="static/images/v2.png" alt="Vehicle 2" class="size" />
+          <h2>Honda Odyssey</h2>
+        </div>
+        <div class="vehicle">
+          <img src="static/images/v3.png" alt="Vehicle 3" class="size" />
+          <h2>Chevrolet Traverse</h2>
+        </div>
+        <div class="vehicle">
+          <img src="static/images/v4.png" alt="Vehicle 4" class="size" />
+          <h2>Kia Sorento</h2>
+        </div>
+        <div class="vehicle">
+          <img src="static/images/v5.png" alt="Vehicle 5" class="size" />
+          <h2>Tata Tiago</h2>
+        </div>
+        <div class="vehicle">
+          <img src="static/images/v6.png" alt="Vehicle 6" class="size" />
+          <h2>Maruti Alto K10</h2>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

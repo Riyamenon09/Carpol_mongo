@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Find a Ride</title>
+  <style>
+    /* General layout */
+    :root { --accent:#ff9800; --accent-dark:#e68900; --bg:#e6e6fa; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+      color: #222;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #333;
+      padding: 16px 20px;
+      color: white;
+      font-size: 24px;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 50;
+    }
+    .navbar h1 { margin: 0; font-size: 1.6rem; }
+
+    /* Main container */
+    .main-content {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      padding: 20px;
+      margin-top: 86px; /* below navbar */
+      align-items: start;
+    }
+
+    .side-image {
+      flex: 1;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .side-image img { max-width:100%; height:auto; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.18); }
+
+    .container {
+      flex: 2;
+      background: #fff;
+      padding: 22px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      max-width: 640px;
+      width: 100%;
+    }
+
+    h2 { margin: 0 0 12px; font-size: 1.25rem; color: #333; }
+
+    form { margin-top: 6px; text-align: left; }
+
+    label {
+      display:block;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: #333;
+      font-weight:600;
+    }
+
+    input[type="text"], input[type="number"] {
+      width:100%;
+      padding:10px 12px;
+      margin-top:6px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size: 1rem;
+      outline: none;
+      transition: box-shadow .12s, border-color .12s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #caa3ff;
+      box-shadow: 0 6px 18px rgba(128,82,255,0.08);
+    }
+
+    .controls { display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap; }
+    .controls .col { flex:1; min-width:140px; }
+
+    .checkbox-row { margin-top:10px; font-size:0.95rem; display:flex; align-items:center; gap:8px; }
+
+    button {
+      background: var(--accent);
+      color: white;
+      padding: 11px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      width:100%;
+    }
+    button:hover { background: var(--accent-dark); }
+
+    /* Autocomplete suggestions */
+    .suggestions { position: relative; }
+    .suggest-list {
+      position: absolute;
+      left:0; right:0;
+      background: #fff;
+      border: 1px solid #e3e3e3;
+      border-top: none;
+      max-height: 220px;
+      overflow:auto;
+      z-index: 120;
+      display:none;
+      border-radius: 0 0 8px 8px;
+    }
+    .suggest-item { padding:10px 12px; cursor:pointer; border-bottom:1px solid #f2f2f2; }
+    .suggest-item:hover { background:#f7f7f8; }
+
+    /* small responsive */
+    @media (max-width:900px) {
+      .main-content { flex-direction:column; align-items:center; padding:12px; margin-top:72px; }
+      .side-image { order:2; }
+      .container { order:1; width:100%; max-width:680px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <h1>Find a Ride</h1>
+  </header>
+
+  <main class="main-content" role="main" aria-labelledby="find-heading">
+    <div class="side-image" aria-hidden="true">
+      <img src="/static/images/i1.png" alt="Ride illustration" />
+    </div>
+
+    <section class="container" aria-label="Find a ride form">
+      <h2 id="find-heading">Search for available rides</h2>
+
+      <form id="searchForm" onsubmit="return false;" autocomplete="off" novalidate>
+        <!-- Pickup -->
+        <label for="pickup_location">Pickup Location</label>
+        <div class="suggestions" role="combobox" aria-haspopup="listbox" aria-owns="pickup_suggestions" aria-expanded="false">
+          <input id="pickup_location" name="pickup_location" type="text" inputmode="text" aria-autocomplete="list" placeholder="e.g. Port Blair" />
+          <div id="pickup_suggestions" class="suggest-list" role="listbox" aria-label="Pickup suggestions"></div>
+        </div>
+
+        <!-- Destination -->
+        <label for="destination_location">Destination</label>
+        <div class="suggestions" role="combobox" aria-haspopup="listbox" aria-owns="destination_suggestions" aria-expanded="false">
+          <input id="destination_location" name="destination_location" type="text" inputmode="text" aria-autocomplete="list" placeholder="e.g. Havelock Island" />
+          <div id="destination_suggestions" class="suggest-list" role="listbox" aria-label="Destination suggestions"></div>
+        </div>
+
+        <!-- Controls row -->
+        <div class="controls">
+          <div class="col">
+            <label for="passengers">Number of Passengers</label>
+            <input id="passengers" name="passengers" type="number" min="1" value="1" />
+          </div>
+
+          <div class="col" style="min-width:160px;">
+            <label style="visibility:hidden">placeholder</label>
+            <div class="checkbox-row">
+              <input id="female_drivers" name="female_drivers" type="checkbox" />
+              <label for="female_drivers" style="font-weight:600;">Only show female drivers</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <button id="searchBtn" type="button" aria-label="Search for rides">Search</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="side-image" aria-hidden="true">
+      <img src="/static/images/i2.png" alt="Ride illustration two" style="width:250px;height:330px;object-fit:cover;border-radius:8px" />
+    </div>
+  </main>
+
+  <!-- JavaScript: autocomplete + redirect to book_rides (REST API will be called there) -->
+  <script>
+    /* Debounce helper */
+    function debounce(fn, wait){
+      let t;
+      return function(...args){
+        clearTimeout(t);
+        t = setTimeout(()=> fn.apply(this, args), wait);
+      };
+    }
+
+    /* Fetch suggestions from /api/places?q=... */
+    async function fetchSuggestions(q, targetId){
+      const el = document.getElementById(targetId);
+      if(!q || q.length < 1){
+        el.style.display = 'none';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/places?q=${encodeURIComponent(q)}`);
+        if(!res.ok) throw new Error('Network error');
+        const arr = await res.json();
+        el.innerHTML = '';
+        if(!arr || arr.length === 0){ el.style.display = 'none'; return; }
+        arr.forEach(name => {
+          const item = document.createElement('div');
+          item.className = 'suggest-item';
+          item.setAttribute('role','option');
+          item.textContent = name;
+          item.addEventListener('click', ()=> {
+            const inputId = targetId.startsWith('pickup') ? 'pickup_location' : 'destination_location';
+            document.getElementById(inputId).value = name;
+            el.style.display = 'none';
+          });
+          el.appendChild(item);
+        });
+        el.style.display = 'block';
+      } catch(err) {
+        console.error('Autocomplete error', err);
+        el.style.display = 'none';
+      }
+    }
+
+    /* Wire autocomplete inputs */
+    document.getElementById('pickup_location').addEventListener('input', debounce(e => {
+      fetchSuggestions(e.target.value, 'pickup_suggestions');
+    }, 220));
+
+    document.getElementById('destination_location').addEventListener('input', debounce(e => {
+      fetchSuggestions(e.target.value, 'destination_suggestions');
+    }, 220));
+
+    /* Hide suggestion lists when clicking outside */
+    document.addEventListener('click', (ev)=>{
+      if(!ev.target.closest('.suggestions')){
+        document.getElementById('pickup_suggestions').style.display = 'none';
+        document.getElementById('destination_suggestions').style.display = 'none';
+      }
+    });
+
+    /* When Enter pressed inside suggestions, allow selection via keyboard */
+    function bindKeyboard(inputId, listId){
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      let index = -1;
+
+      input.addEventListener('keydown', (e)=>{
+        const items = list.querySelectorAll('.suggest-item');
+        if(items.length === 0) return;
+
+        if(e.key === 'ArrowDown'){
+          index = Math.min(index + 1, items.length - 1);
+          items[index].focus();
+          e.preventDefault();
+        } else if(e.key === 'ArrowUp'){
+          index = Math.max(index - 1, 0);
+          items[index].focus();
+          e.preventDefault();
+        } else if(e.key === 'Enter'){
+          if(index >= 0 && items[index]){
+            items[index].click();
+            index = -1;
+            e.preventDefault();
+          }
+        } else {
+          index = -1;
+        }
+      });
+    }
+    bindKeyboard('pickup_location','pickup_suggestions');
+    bindKeyboard('destination_location','destination_suggestions');
+
+    /* Search button -> redirect to book_rides page (template will call REST API to fetch JSON) */
+    document.getElementById('searchBtn').addEventListener('click', ()=>{
+      const pickup = encodeURIComponent(document.getElementById('pickup_location').value.trim());
+      const destination = encodeURIComponent(document.getElementById('destination_location').value.trim());
+      const passengers = parseInt(document.getElementById('passengers').value, 10) || 1;
+      const female = document.getElementById('female_drivers').checked ? '1' : '0';
+
+      const url = `/book_rides?pickup=${pickup}&destination=${destination}&passengers=${passengers}&female=${female}`;
+      window.location.href = url;
+    });
+  </script>
+</body>
+</html>

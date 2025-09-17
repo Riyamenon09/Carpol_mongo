@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Find a Ride</title>
+  <style>
+    /* --- Page / theme --- */
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --accent: #ff8c00;
+      --muted: #6b7280;
+      --success: #28a745;
+      --surface-shadow: 0 8px 30px rgba(22, 27, 44, 0.06);
+      --radius: 12px;
+      --maxwidth: 1200px;
+      font-family: "Inter", Roboto, Arial, sans-serif;
+    }
+    html,body{height:100%; margin:0; background:var(--bg); color:#111827}
+    .navbar { background:#27272a; color:#fff; padding:16px 24px; box-shadow:0 2px 6px rgba(0,0,0,0.12); position:sticky; top:0; z-index:30; }
+    .navbar h1 { margin:0; font-size:20px; font-weight:700; letter-spacing:0.2px; }
+
+    .container { max-width:var(--maxwidth); margin:34px auto; padding:0 20px; display:grid; grid-template-columns: 420px 1fr; gap:28px; align-items:start; }
+
+    /* --- Left panel (search) --- */
+    .panel { background:var(--card); border-radius:var(--radius); padding:20px; box-shadow:var(--surface-shadow); }
+    .panel h3 { margin:0 0 8px 0; font-size:18px; }
+    label { display:block; margin-top:12px; font-size:13px; color:var(--muted); font-weight:600; }
+    input[type="text"], input[type="number"] { width:100%; padding:12px 14px; margin-top:8px; border-radius:10px; border:1px solid #e6e9ef; font-size:14px; background:#fbfcfe; box-sizing:border-box; }
+    .primary { background: linear-gradient(180deg,var(--accent), #e77b00); border:0; color:#fff; padding:12px; border-radius:10px; width:100%; font-weight:700; margin-top:18px; cursor:pointer; box-shadow:0 6px 16px rgba(247,149,30,0.12); }
+
+    /* --- Autocomplete list --- */
+    .autocomplete-list { position:absolute; background:var(--card); border-radius:10px; margin-top:6px; overflow:auto; max-height:180px; width:calc(100% - 2px); border:1px solid #e6e9ef; box-shadow:0 10px 30px rgba(17,24,39,0.06); z-index:40; }
+    .autocomplete-item { padding:10px 12px; cursor:pointer; font-size:14px; color:#111827; }
+    .autocomplete-item:hover { background:#f6f8fb; }
+
+    /* --- Right panel (results) --- */
+    .results-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+    .results-list { display:flex; flex-direction:column; gap:12px; }
+    .ride-card { display:flex; gap:16px; align-items:flex-start; background:linear-gradient(180deg,#ffffff,#fbfdff); border-radius:12px; padding:14px; border:1px solid rgba(14,20,36,0.03); box-shadow:0 8px 28px rgba(12,18,36,0.04); }
+    /* avatar now circular and uses overflow:hidden so images crop cleanly */
+    .avatar { width:72px; height:72px; border-radius:50%; background:#eef2ff; display:flex; align-items:center; justify-content:center; font-weight:800; color:#374151; font-size:20px; flex-shrink:0; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.04); }
+    .avatar-img { width:100%; height:100%; object-fit:cover; display:block; }
+    .avatar-text { display:flex; align-items:center; justify-content:center; width:100%; height:100%; font-weight:800; color:#374151; font-size:18px; text-transform:uppercase; background:transparent; }
+    .info { flex:1; }
+    .title { font-weight:800; font-size:16px; color:#0b1220; margin-bottom:6px; }
+    .meta { color:var(--muted); font-size:13px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .notes { margin-top:8px; color:#374151; font-size:13px; }
+
+    .actions { width:180px; text-align:right; display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+    .contact-link { color: #0f6ef4; text-decoration:none; font-weight:600; font-size:14px; }
+    .book-btn { background:var(--success); color:white; border:0; padding:10px 14px; border-radius:10px; width:100%; font-weight:700; cursor:pointer; box-shadow:0 6px 18px rgba(40,167,69,0.14); }
+    .book-btn:hover { transform:translateY(-1px); }
+
+    .small { font-size:13px; color:var(--muted); }
+    .empty { padding:36px; text-align:center; color:var(--muted); }
+
+    /* responsive */
+    @media (max-width:900px){
+      .container { grid-template-columns: 1fr; padding:18px; }
+      .actions { width:140px; align-items:flex-start; text-align:left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar"><h1>Find a Ride</h1></div>
+
+  <div class="container">
+    <!-- LEFT: search -->
+    <div class="panel">
+      <h3>Search</h3>
+      <form id="searchForm" autocomplete="off">
+        <div style="position:relative;">
+          <label for="pickup">Pickup Location</label>
+          <input id="pickup" name="pickup" type="text" placeholder="Enter pickup (e.g. Port Blair)" required />
+          <div id="pickup_suggestions" class="autocomplete-list" style="display:none;"></div>
+        </div>
+
+        <div style="position:relative;">
+          <label for="destination">Destination</label>
+          <input id="destination" name="destination" type="text" placeholder="Enter destination (e.g. Havelock Island)" required />
+          <div id="destination_suggestions" class="autocomplete-list" style="display:none;"></div>
+        </div>
+
+        <label for="passengers_global">Passengers (default)</label>
+        <input id="passengers_global" name="passengers_global" type="number" min="1" value="1" />
+
+        <label style="margin-top:12px;">
+          <input id="female_only" name="female_only" type="checkbox" /> Only show female drivers
+        </label>
+
+        <button class="primary" type="submit">Search</button>
+      </form>
+    </div>
+
+    <!-- RIGHT: results -->
+    <div class="panel">
+      <div class="results-header">
+        <h3 style="margin:0;">Available Rides</h3>
+        <div class="small">Click <strong>Book</strong> to review & confirm</div>
+      </div>
+
+      <div id="resultsContainer" class="results-list">
+        <div class="empty">Enter pickup & destination and click Search to see matching rides.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // debounce helper
+    function debounce(fn, wait) {
+      let t;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // fetch places suggestions
+    async function fetchPlaces(q){
+      if(!q) return [];
+      try{
+        const res = await fetch('/api/places?q=' + encodeURIComponent(q));
+        if(!res.ok) return [];
+        const j = await res.json();
+        return Array.isArray(j) ? j : [];
+      }catch(e){
+        console.error('places err', e);
+        return [];
+      }
+    }
+
+    // attach autocomplete
+    function attachAutocomplete(inputEl, suggestionEl){
+      async function show(){
+        const q = inputEl.value.trim();
+        if(!q){ suggestionEl.style.display='none'; suggestionEl.innerHTML=''; return; }
+        const items = await fetchPlaces(q);
+        if(!items.length){ suggestionEl.style.display='none'; suggestionEl.innerHTML=''; return; }
+        suggestionEl.innerHTML = items.map(t => `<div class="autocomplete-item">${t}</div>`).join('');
+        suggestionEl.style.display = 'block';
+        suggestionEl.querySelectorAll('.autocomplete-item').forEach(node => {
+          node.addEventListener('click', () => {
+            inputEl.value = node.textContent;
+            suggestionEl.style.display = 'none';
+          });
+        });
+      }
+      inputEl.addEventListener('input', debounce(show, 220));
+      document.addEventListener('click', (ev) => {
+        if(!suggestionEl.contains(ev.target) && ev.target !== inputEl) suggestionEl.style.display='none';
+      });
+    }
+
+    attachAutocomplete(document.getElementById('pickup'), document.getElementById('pickup_suggestions'));
+    attachAutocomplete(document.getElementById('destination'), document.getElementById('destination_suggestions'));
+
+    // build neat card but NO inline passenger dropdown; show profile pic if available
+    function buildRideCard(r){
+      // prepare avatar HTML: include initials element and image (image hidden on error)
+      const initials = (r.driver_name || 'DR').split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase();
+      let picPath = '';
+      if (r.profile_pic) {
+        picPath = r.profile_pic;
+        if (picPath.startsWith('uploads/')) picPath = '/static/' + picPath;
+        else if (picPath.startsWith('/uploads/')) picPath = '/static' + picPath;
+        // else if already starts with /static/ leave as-is
+      }
+
+      let avatarHtml = '';
+      if (picPath) {
+        // include initials element (hidden by default) and image that hides onerror
+        avatarHtml = `
+          <div class="avatar-text" style="display:flex">${escapeHtml(initials)}</div>
+          <img src="${escapeAttr(picPath)}" alt="Driver" class="avatar-img"
+               onerror="this.style.display='none'; this.previousElementSibling.style.display='flex';" />`;
+      } else {
+        avatarHtml = `<div class="avatar-text">${escapeHtml(initials)}</div>`;
+      }
+
+      return `
+        <div class="ride-card" data-id="${escapeAttr(r.id)}">
+          <div class="avatar">${avatarHtml}</div>
+          <div class="info">
+            <div class="title">${escapeHtml(r.driver_name)} — ${escapeHtml(r.origin)} → ${escapeHtml(r.destination)}</div>
+            <div class="meta">
+              <div>Seats available: <strong id="seats-${escapeAttr(r.id)}">${r.seats_available}</strong> ${r.seats_total ? '/ ' + escapeHtml(r.seats_total) : ''}</div>
+              <div>•</div>
+              <div>${escapeHtml(r.date || 'Date/time not set')}</div>
+              <div>•</div>
+              <div>Fare: ₹${r.fare ?? 0}</div>
+            </div>
+            <div class="notes">${escapeHtml(r.notes || '')}</div>
+          </div>
+
+          <div class="actions">
+            <a class="contact-link" href="tel:${encodeURIComponent(r.contact_number || '')}">${r.contact_number || 'No contact'}</a>
+            <!-- Book now goes to confirmation page with ride_id and default passengers param -->
+            <button class="book-btn" onclick="gotoConfirm('${escapeAttr(r.id)}')">Book</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // small helper to escape text when injecting into template strings
+    function escapeHtml(unsafe) {
+      if (unsafe === null || unsafe === undefined) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    function escapeAttr(s) {
+      return escapeHtml(s).replace(/"/g, "&quot;");
+    }
+
+    // search handling
+    document.getElementById('searchForm').addEventListener('submit', async (ev)=>{
+      ev.preventDefault();
+      const pickup = document.getElementById('pickup').value.trim();
+      const destination = document.getElementById('destination').value.trim();
+      let passengers = parseInt(document.getElementById('passengers_global').value,10);
+      if(!passengers || passengers < 1) passengers = 1;
+      const female_drivers = !!document.getElementById('female_only').checked;
+
+      if(!pickup || !destination){ alert('Enter pickup and destination'); return; }
+      const resultsContainer = document.getElementById('resultsContainer');
+      resultsContainer.innerHTML = '<div class="empty">Searching for matching rides...</div>';
+
+      try{
+        const res = await fetch('/api/search_rides',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ pickup, destination, passengers, female_drivers })
+        });
+        if(!res.ok){
+          const err = await res.json().catch(()=>({error:res.statusText}));
+          resultsContainer.innerHTML = `<div class="empty">Search error: ${err.error || res.statusText}</div>`;
+          return;
+        }
+        const data = await res.json();
+        if(!Array.isArray(data) || data.length===0){
+          resultsContainer.innerHTML = '<div class="empty">No rides found for the selected route and filters.</div>';
+          return;
+        }
+        resultsContainer.innerHTML = data.map(buildRideCard).join('');
+      }catch(e){
+        console.error(e);
+        resultsContainer.innerHTML = '<div class="empty">Network error. Try again later.</div>';
+      }
+    });
+
+    // navigate to confirmation page instead of in-card dropdown/booking
+    function gotoConfirm(rideId){
+      // pass default passengers from global field; user can change on confirm page
+      const defaultPassengers = Math.max(1, parseInt(document.getElementById('passengers_global').value || '1', 10));
+      // build querystring and go to server-rendered confirm page
+      const qs = new URLSearchParams({ ride_id: rideId, passengers: defaultPassengers });
+      window.location.href = '/ride_confirm?' + qs.toString();
+    }
+  </script>
+</body>
+</html>

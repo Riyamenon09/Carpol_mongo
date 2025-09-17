@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Driver and Vehicle Information</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #e5e5f7;
+        padding: 0;
+        margin: 0;
+      }
+      .navbar h1 {
+        text-align: left;
+        color: #fff;
+        margin-top: 20px;
+      }
+
+      .navbar {
+        background-color: #333;
+        padding: 15px;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+      }
+      .navbar a {
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        margin: 0 15px;
+        display: inline-block;
+      }
+
+      form {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 700px;
+        margin: 30px auto;
+      }
+      h2 {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 5px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+        color: #555;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+      }
+      button {
+        margin-top: 20px;
+        padding: 12px 20px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        width: 100%;
+      }
+      button:hover {
+        background-color: #218838;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <h1>Driver and Vehicle Information</h1>
+    </div>
+
+   <form action="{{ url_for('driver_page') }}" method="post" enctype="multipart/form-data">
+
+      <h2 id="personal-info">Personal Information</h2>
+
+      <label for="driver_name">Driver Name:</label>
+      <input
+        type="text"
+        id="driver_name"
+        name="driver_name"
+        placeholder="Enter full name"
+        required
+      />
+      <label for="gender">Gender:</label>
+      <input
+        type="text"
+        id="Gender:"
+        name="Gender:"
+        placeholder="Enter Gender:"
+        required
+      />
+      <label for="contact_number">Contact Number:</label>
+      <input
+        type="text"
+        id="contact_number"
+        name="contact_number"
+        placeholder="Enter contact number"
+        required
+      />
+
+      <label for="address">Address:</label>
+      <textarea
+        id="address"
+        name="address"
+        rows="3"
+        placeholder="Enter address"
+        required
+      ></textarea>
+
+      <label for="dob">Date of Birth:</label>
+      <input type="date" id="dob" name="dob" required />
+
+      <label for="driver_photo">Profile Photo:</label>
+      <input
+        type="file"
+        id="driver_photo"
+        name="driver_photo"
+        accept="image/*"
+        required
+      />
+      <br />
+      <br /><br />
+
+      <h2 id="vehicle-info">Vehicle Information</h2>
+
+      <label for="vehicle_type">Vehicle Type:</label>
+      <input
+        type="text"
+        id="vehicle_type"
+        name="vehicle_type"
+        placeholder="Enter vehicle type (e.g., Sedan, SUV)"
+        required
+      />
+
+      <label for="license_plate">License Plate:</label>
+      <input
+        type="text"
+        id="license_plate"
+        name="license_plate"
+        placeholder="Enter license plate number"
+        required
+      />
+
+      <label for="insurance_number">Insurance Number:</label>
+      <input
+        type="text"
+        id="insurance_number"
+        name="insurance_number"
+        placeholder="Enter insurance number"
+        required
+      />
+
+      <label for="registration_date">Registration Date:</label>
+      <input
+        type="date"
+        id="registration_date"
+        name="registration_date"
+        required
+      />
+
+      <label for="vehicle_photo">Vehicle Photo:</label>
+      <input
+        type="file"
+        id="vehicle_photo"
+        name="vehicle_photo"
+        accept="image/*"
+        required
+      />
+      <br /><br />
+
+      <h2 id="registration-details">Vehicle Registration Details</h2>
+
+      <label for="registration_number">Registration Number:</label>
+      <input
+        type="text"
+        id="registration_number"
+        name="registration_number"
+        placeholder="Enter registration number"
+        required
+      />
+
+      <label for="registration_expiry">Registration Expiry Date:</label>
+      <input
+        type="date"
+        id="registration_expiry"
+        name="registration_expiry"
+        required
+      />
+
+      <label for="registration_photo">Registration Document:</label>
+      <input
+        type="file"
+        id="registration_photo"
+        name="registration_photo"
+        accept="image/*"
+        required
+      />
+
+      <br /><br />
+
+      <h2 id="insurance-details">Insurance Details</h2>
+
+      <label for="insurance_provider">Insurance Provider:</label>
+      <input
+        type="text"
+        id="insurance_provider"
+        name="insurance_provider"
+        placeholder="Enter insurance provider name"
+        required
+      />
+
+      <label for="insurance_expiry">Insurance Expiry Date:</label>
+      <input
+        type="date"
+        id="insurance_expiry"
+        name="insurance_expiry"
+        required
+      />
+
+      <label for="insurance_document">Insurance Document:</label>
+      <input
+        type="file"
+        id="insurance_document"
+        name="insurance_document"
+        accept="image/*"
+        required
+      />
+
+      <br /><br />
+
+      <h2 id="service-history">Service History</h2>
+
+      <label for="service_details">Service Details:</label>
+      <textarea
+        id="service_details"
+        name="service_details"
+        rows="3"
+        placeholder="Enter service details (date, service type, etc.)"
+        required
+      ></textarea>
+
+      <label for="service_document">Service Document:</label>
+      <input
+        type="file"
+        id="service_document"
+        name="service_document"
+        accept="image/*"
+        required
+      />
+
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #333;
+        padding: 15px 20px;
+      }
+
+      .navbar h1 {
+        color: #fff;
+        text-decoration: none;
+        font-size: 2.2rem;
+        margin-left: 28px;
+      }
+
+      .register-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 50px 20px;
+        background-color: #e5e5f7;
+        min-height: calc(100vh - 70px);
+      }
+
+      .register-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .register-header i {
+        font-size: 3rem;
+        color: #0056b3;
+        margin-right: 10px;
+      }
+
+      .register-header h2 {
+        font-size: 2.5rem;
+        color: #333;
+      }
+
+      .register-text {
+        text-align: center;
+        max-width: 800px;
+        margin-bottom: 20px;
+      }
+
+      .register-text p {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 20px;
+      }
+
+      .register-form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .register-form label {
+        display: block;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .register-form input,
+      .register-form select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+
+      .register-form button {
+        background-color: #ffa500;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      .register-form button:hover {
+        background-color: #ff7f00;
+      }
+
+      @media (max-width: 768px) {
+        .register-form {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <h1>Register</h1>
+    </nav>
+
+    <section class="register-section">
+      <div class="register-header">
+        <h2>Join the Carpool</h2>
+      </div>
+      <div class="register-text">
+        <p>Sign up as a Passenger and start sharing safe, sustainable rides.</p>
+      </div>
+
+      <form class="register-form" action="{{ url_for('register') }}" method="POST">
+
+        <label for="name">Full Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter your full name"
+          required
+        />
+
+        <label for="email">Email Address:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+
+        <label for="phone">Phone Number:</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="Enter your phone number"
+          required
+        />
+
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Create a password"
+          required
+        />
+
+        <button type="submit">Register Now</button>
+      </form>
+      <br />
+      <p>
+        Already having an account? Sign in to book your ride.
+        <a href="{{ url_for('signin') }}"> Sign-in</a>
+      </p>
+    </section>
+  </body>
+</html>
